@@ -1,0 +1,12 @@
+services:
+  app:
+    container_name: lmstudio_rag
+    build: .
+    volumes:
+      - ./:/app/
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    ports:
+      - "8778:8778"
+    command: 
