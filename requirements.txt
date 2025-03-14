@@ -2,3 +2,8 @@ langchain
 langchain_community
 langchain_openai
 openai
+numpy
+jupyterlab
+requests
+dotenv
+python-docx>=1.1.2
