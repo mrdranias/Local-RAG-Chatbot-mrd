@@ -1,7 +1,22 @@
+name: lmrag
+
 services:
   app:
     container_name: lmstudio_rag
     build: .
+    environment:
+      CHROMA_HTTP_PORT: 8000
+      CHROMA_HTTP_HOST: chromadb
+      CHROMA_TENANT: default_tenant
+      VECTOR_DB: chroma
+      CORS_ALLOW_ORIGIN: "*"
+      RAG_EMBEDDING_ENGINE: lmstudio
+      RAG_OLLAMA_BASE_URL: http://localhost:8083    
+      AUDIO_TTS_ENGINE: elevenlabs
+      AUDIO_TTS_API_KEY: ${ELEVENLABS_TTS_API_KEY}
+      ENV: dev
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
       - ./:/app/
     working_dir: /app
@@ -9,4 +24,38 @@ services:
     stdin_open: true
     ports:
       - "8778:8778"
-    command: 
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    networks:
+      - lmrag
+
+      
+  chromadb:
+    container_name: chromadb
+    image: latest
+    volumes:
+      - "chromadb:/chroma/chroma"
+    environment:
+      ANONYMIZED_TELEMETRY: false
+      IS_PERSISTENT: "TRUE"
+      ALLOW_RESET: "TRUE"
+      PERSIST_DIRECTORY: /chroma/chroma
+      LOG_LEVEL: debug
+    ports: 
+      - "8002:8000"
+    healthcheck: 
+      test: ["CMD-SHELL", "curl http://chromadb:8000/api/v1/heartbeat || exit 1"]
+      interval: 30s
+      retries: 2
+      start_period: 10s
+      timeout: 10s
+    networks:
+      - lmrag
+
+networks:
+  lmrag:
+    driver: bridge
+
+volumes:
+  chromadb:
