@@ -18,8 +18,8 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
-      - ./:/app/
-    working_dir: /app
+      - ./:/home/app/
+    working_dir: /home/app
     tty: true
     stdin_open: true
     ports:
